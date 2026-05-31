@@ -1,0 +1,48 @@
+# Add this modbus configuration to configuration.yaml in Home Assistant.
+
+# The modbus configuration is made for the SMA Sunny Boy Smart Energy 3.6. It should work for any SMA SBSExx.
+# For other inverters, from SMA or any other brand, this configuration will not work, because it probably uses other modbus addresses.
+
+# The modbus specification of SBSExx can be found in the download centre of SMA or at https://files.sma.de/downloads/PARAMETER-SBSExx-50_03-08-12-R.zip
+
+modbus:
+  - name: modbus_hub
+    type: tcp
+    host: 192.168.x.xx  # Replace with the IP address of your inverter
+    port: 502
+    delay: 5
+    message_wait_milliseconds: 100
+    timeout: 5
+    sensors:
+      - name: Current PV feed-in
+        address: 30775
+        data_type: int32
+        scan_interval: 1
+        unit_of_measurement: W
+        unique_id: pv_current_feed_in
+        device_class: power
+        state_class: measurement
+      - name: Battery SoC
+        address: 30845
+        data_type: uint32
+        scan_interval: 60
+        unit_of_measurement: '%'
+        unique_id: pv_battery_soc
+        device_class: battery
+        state_class: measurement
+      - name: Current battery charge
+        address: 31393
+        data_type: uint32
+        scan_interval: 1
+        unit_of_measurement: W
+        unique_id: pv_current_battery_charge
+        device_class: power
+        state_class: measurement
+      - name: Current battery discharge
+        address: 31395
+        data_type: uint32
+        scan_interval: 1
+        unit_of_measurement: W
+        unique_id: pv_current_battery_discharge
+        device_class: power
+        state_class: measurement
