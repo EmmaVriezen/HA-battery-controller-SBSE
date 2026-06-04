@@ -1,0 +1,41 @@
+blueprint:
+  name: Battery SoC 100% marker
+  description: >-
+    Triggers when the state of charge (SoC) of the battery reaches 100%, and
+    stores the current date.
+  domain: automation
+  author: Emma Vriezen
+  homeassistant:
+    min_version: 2024.6.0
+  input:
+    battery_soc:
+      name: Battery state of charge (%)
+      description: Triggers this automation when reaching > 99
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+    last_date_charged_to_100:
+      name: Last charged to 100% (date)
+      description: Updated by this automation if triggered
+      selector:
+        entity:
+          filter:
+            - domain: input_datetime
+alias: Mark today as battery fully charged
+description: ""
+triggers:
+  - trigger: numeric_state
+    entity_id:
+      - !input battery_soc
+    above: 99
+conditions: []
+actions:
+  - action: input_datetime.set_datetime
+    metadata: {}
+    data:
+      date: "{{ now().strftime('%Y-%m-%d') }}"
+    target:
+      entity_id: !input last_date_charged_to_100
+    alias: Set 'last day charged to 100%' to today
+mode: single
