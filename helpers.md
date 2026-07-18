@@ -1,6 +1,9 @@
 # Required helper entities
 
-## Charge every n days to 100%
+## Independent helper entities
+These helper entities are not relying on integrations, devices, or whatsoever. Helpers in other sections might be dependent on these entities. So, set the helpers from this section up first.
+
+### Charge every n days to 100%
 _Try to find a good value for your battery. **10** is fine for the SMA Home Storage.
 That means that every 10 days, the battery is charged to 100%, if there is enough solar energy.
 The longer the battery spends without reaching 100%, the more uncalibrated its battery management system might become._
@@ -12,7 +15,7 @@ The longer the battery spends without reaching 100%, the more uncalibrated its b
 - Display mode: Input field
 - Step size: 1
 
-## Recently charged to 100%
+### Recently charged to 100%
 - Helper type: Template > Binary sensor
 - Entity ID: binary_sensor.recently_charged_to_100
 - Template:
@@ -28,7 +31,7 @@ The longer the battery spends without reaching 100%, the more uncalibrated its b
   ```
 
 
-## Charge to 100% capacity multiplier
+### Charge to 100% capacity multiplier
 _Charging from 99% to 100% usually takes longer than any other 1%-increase, becasue the battery management systems decalibrate overtime.
 Hence, the remaining battery capacity is actually more than the 1% might imply.
 To overcome this, the last 1% is inflated by this multiplier to charge with more power.
@@ -42,7 +45,22 @@ If the battery gets stuck at 99%, then this multiplier can be increased._
 - Display mode: Input field
 - Step size: 0.01
 
-## Remaining charge goal today
+### Maximum discharge power of battery
+_The hard limit of the discharge power. At all times, the discharge power will be capped at this value.
+Set it to either the maximum output of the system, or to a lower value, if desired._
+
+- Helper type: Number
+- Entity ID: input_number.battery_max_discharge_power
+- Minimum value: 1
+- Maximum value: [Maximum possible discharge power of the batteries, or the maximum power of the PV-system, whichever is lowest]
+- Step value: 1
+- Unit of measurement: W
+
+## Battery-dependent helper entities
+These helper entities are dependent on information from the battery. This information is gathered by the 'Modbus' integration. The entities from 'Modbus' that are required are:
+- sensor.battery_soc
+
+### Remaining charge goal today
 - Type: Template > Number
 - Entity ID: number.remaining_charge_goal_today
 - Template:
@@ -60,18 +78,14 @@ If the battery gets stuck at 99%, then this multiplier can be increased._
 - Step value: 1
 - Unit of measurement: Wh
 
-## Maximum discharge power of battery
-_The hard limit of the discharge power. At all times, the discharge power will be capped at this value.
-Set it to either the maximum output of the system, or to a lower value, if desired._
+## DSMR-smart meter integration-dependent entities
 
-- Helper type: Number
-- Entity ID: input_number.battery_max_discharge_power
-- Minimum value: 1
-- Maximum value: [Maximum possible discharge power of the batteries, or the maximum power of the PV-system, whichever is lowest]
-- Step value: 1
-- Unit of measurement: W
+These helpers use entities from the device 'Energy Meter' from the integration 'DSMR Smart Meter'. From this device, the following entities are used:
+- sensor.energy_production_today_2
+- sensor.electricity_meter_power_consumption
+- sensor.electricity_meter_power_production
 
-## Maximum grid feed in for charging battery
+### Maximum grid feed in for charging battery
 - Helper type: Template > Number
 - Entity ID: number.maximum_grid_feed_in_for_charging_battery
 - Template:
@@ -101,3 +115,17 @@ Set it to either the maximum output of the system, or to a lower value, if desir
 - Maximum value: [Equal to the maximum output of the inverter, e.g. 3600]
 - Step value: 1
 - Unit of measurement: W
+
+### Netto energy consumption
+- Helper type: Template > Sensor
+- Entity ID: sensor.netto_energy_consumption
+- Template:
+
+  ```
+  {{ states('sensor.electricity_meter_power_consumption') | int - states('sensor.electricity_meter_power_production') | int }}
+  ```
+
+- Device class: Power
+- State class: Measurement
+- Unit of measurement: W
+
