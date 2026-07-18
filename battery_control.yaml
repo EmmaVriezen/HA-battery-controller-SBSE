@@ -1,0 +1,264 @@
+blueprint:
+  name: SMA SBSE Battery control
+  description: >-
+    Control a battery through a SMA Sunny Boy Smart Energy (SBSE) for maximum
+    self-sufficiency. Use it at your own risk.
+    
+    For the modbus configuration, template entities, and other information, see 
+    https://github.com/EmmaVriezen/HA-battery-controller-SBSE/tree/main
+    
+    'Default entity' means the name of the entity that should be selected, if
+    you follow the instructions on GitHub.
+  domain: automation
+  author: Emma Vriezen
+  homeassistant:
+    min_version: 2024.6.0
+  input:
+    battery_charge_setpoint:
+      name: Battery (dis)charge control entity (W)
+      description: >-
+        The automation uses this entity as a control variable for setting the
+        (dis)charge power of the battery. The value is sent to the inverter via
+        Modbus. Create an input_number helper entity for this.
+        
+        Default entity: input_number.battery_charge_setpoint
+      selector:
+        entity:
+          filter:
+            - domain: input_number
+    p_value:
+      name: 'Proportional value for changing charge power (recommended: 0.2)'
+      description: >-
+        The proportion of the change in power consumption, with which the
+        battery (dis)charge power is updated.
+      default: 0.2
+      selector:
+        number:
+          min: 0.1
+          max: 0.3
+          step: 0.01
+          mode: slider
+    max_grid_feed_in:
+      name: Maximum grid feed-in (W)
+      description: >-
+        Maximum power returned to the grid, if the battery is not full. 0 would
+        always charge the battery, while higher values delay charging. This
+        effectively gives control over when the battery is charged, namely not
+        early in the morning, but instead in the afternoon during maximum solar
+        production.
+        
+        Default entity: number.maximum_grid_feed_in_for_charging_battery
+      selector:
+        entity:
+          filter:
+            - domain: number
+    inverter_readings:
+      name: Sensor readings
+      icon: mdi:solar-power
+      description: >-
+        These options are readings from the inverter, the battery, and the grid
+        connection point.
+      input:
+        netto_energy_consumption:
+          name: Netto power at grid connection (W)
+          description: >-
+            A positive value represent import from the grid/power consumption.
+            A negative value represents export to the grid/power production. A
+            change of the value of this entity triggers this automation.
+            
+            Default entity: sensor.netto_energy_consumption
+          selector:
+            entity:
+              filter:
+                - domain: [sensor, number, input_number]
+        pv_feed_in:
+          name: Inverter output (W)
+          description: >-
+            The power that the inverter returns to the house.
+            
+            Default entity: sensor.pv_current_feed_in
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+        battery_charging_power:
+          name: Battery charging power (W)
+          description: >-
+            The power at which the battery is currently charged.
+            
+            Default entity: sensor.pv_current_battery_charge
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+        battery_soc:
+          name: Battery state of charge (%)
+          description: >
+            Default entity: sensor.pv_battery_soc
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+    battery_configuration:
+      name: Battery configuration
+      icon: mdi:battery
+      description: >-
+        Depleting the battery or keeping it often fully charged puts strain on
+        the battery. To increase longevity, it is better to limit the minimum
+        and maximum state of charge. However, charging once in a while to 100%
+        is required to keep the state of charge accurate. These options allow
+        for setting a narrower range for the SoC, but also overriding the
+        maximum SoC to sometimes charge to 100% and so calibrate the battery
+        management system.
+      input:
+        min_discharge_soc:
+          name: Minimum battery SoC (%)
+          description: The battery will not be discharged below this state of charge
+          default: 15
+          selector:
+            number:
+              min: 0
+              max: 40
+              step: 1
+              unit_of_measurement: '%'
+              mode: slider
+        max_charge_soc:
+          name: Maximum battery SoC (%)
+          description: >-
+            The battery will not be charged above this state of charge (unless
+            'Recently charged to 100' is false)
+          default: 85
+          selector:
+            number:
+              min: 60
+              max: 100
+              step: 1
+              unit_of_measurement: '%'
+              mode: slider
+        recently_charged_to_100:
+          name: Recently charged to 100 procent
+          description: >-
+            If false, then 'Maximum battery SoC' is ignored and the battery will
+            charge to 100%
+            
+            Default entity: binary_sensor.recently_charged_to_100
+          selector:
+            entity:
+              filter:
+                - domain: binary_sensor
+        max_discharge_power:
+          name: Maximum battery discharge power (W)
+          description: >-
+            Maximum power at which the battery will be discharged (recommended:
+            smaller than but close to the maximum output power of the inverter)
+          
+            Default entity: input_number.battery_max_discharge_power
+          selector:
+            entity:
+              filter:
+                - domain: [sensor, number, input_number]
+variables:
+  netto_energy_consumption: !input netto_energy_consumption
+  battery_charge_setpoint: !input battery_charge_setpoint
+  p_value: !input p_value
+  pv_feed_in: !input pv_feed_in
+  battery_charging_power: !input battery_charging_power
+  max_grid_feed_in: !input max_grid_feed_in
+  max_discharge_power: !input max_discharge_power
+alias: Battery control
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - !input netto_energy_consumption
+    enabled: false
+    alias: The grid supply or feed-in changes
+conditions: []
+actions:
+  - alias: Set battery (dis)charge target
+    sequence:
+      - action: input_number.set_value
+        data_template:
+          value: >-
+            {{ min(max(states(battery_charge_setpoint) |
+            float + states(netto_energy_consumption) | float *
+            p_value |
+            float, min(0, (states(pv_feed_in) | int +
+            states(battery_charging_power) | int -
+            states(max_grid_feed_in) | int)
+            * -1)), states(max_discharge_power) |
+            int)}}
+        target:
+          entity_id: !input battery_charge_setpoint
+        alias: Update HA's battery (dis)charge setpoint
+      - alias: Communicate (dis)charge setpoint to inverter
+        if:
+          - alias: Discharging conditions are met
+            condition: and
+            conditions:
+              - alias: Battery setpoint is positive
+                condition: template
+                value_template: >-
+                  {{ states(battery_charge_setpoint) | int >= 0}}
+              - alias: Battery has enough juice
+                condition: numeric_state
+                entity_id: !input battery_soc
+                above: !input min_discharge_soc
+        then:
+          - alias: Discharge battery
+            action: modbus.write_register
+            metadata: {}
+            data:
+              hub: modbus_hub
+              address: 41467
+              slave: 3
+              value:
+                - 0
+                - "{{ states(battery_charge_setpoint) | int}}"
+        enabled: true
+        else:
+          - alias: Charge battery if possible
+            if:
+              - alias: Charging conditions are met
+                condition: and
+                conditions:
+                  - alias: Battery setpoint is negative
+                    condition: template
+                    value_template: >-
+                      {{ states(battery_charge_setpoint) | int < 0}}
+                  - alias: Battery is not full
+                    condition: or
+                    conditions:
+                      - alias: Battery is not too full
+                        condition: numeric_state
+                        entity_id: !input battery_soc
+                        below: !input max_charge_soc
+                      - condition: state
+                        entity_id: !input recently_charged_to_100
+                        state:
+                          - "off"
+                    enabled: true
+            then:
+              - alias: Charge battery
+                action: modbus.write_register
+                metadata: {}
+                data:
+                  hub: modbus_hub
+                  address: 41467
+                  slave: 3
+                  value:
+                    - 65535
+                    - "{{ 65536 + states(battery_charge_setpoint) | int}}"
+            else:
+              - alias: Pause (dis)charging
+                action: modbus.write_register
+                metadata: {}
+                data:
+                  hub: modbus_hub
+                  address: 41467
+                  slave: 3
+                  value:
+                    - 0
+                    - 0
+mode: single
+max_exceeded: silent
