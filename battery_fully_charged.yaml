@@ -3,6 +3,8 @@ blueprint:
   description: >-
     Triggers when the state of charge (SoC) of the battery reaches 100%, and
     stores the current date.
+    
+    'Default entity' means the name of the entity that should be selected, if you follow the instructions on GitHub (https://github.com/EmmaVriezen/HA-battery-controller-SBSE/tree/main)
   domain: automation
   author: Emma Vriezen
   homeassistant:
@@ -10,7 +12,10 @@ blueprint:
   input:
     battery_soc:
       name: Battery state of charge (%)
-      description: Triggers this automation when reaching > 99
+      description: >-
+        Triggers this automation when reaching > 99
+
+        Default entity: sensor.pv_battery_soc
       selector:
         entity:
           filter:
