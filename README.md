@@ -17,13 +17,3 @@ WIP. Still left to add:
 5. List other necessary entities for battery control autmation
 6. Upload autmation blueprints
 7. Share this
-
-Tips:
-- How do I get a 'netto energy consumption' entity from [the DSMR integration](https://www.home-assistant.io/integrations/dsmr)?
-    - Create a template helper with template:
-      
-      ```{{ states('sensor.electricity_meter_power_consumption') | int - states('sensor.electricity_meter_power_production') | int }}```
-    - Unit of measurement: W
-    - Device class: Power
-    - State class: Measurement
-    - 
