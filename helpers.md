@@ -60,9 +60,16 @@ If the battery gets stuck at 99%, then this multiplier can be increased._
 - Step value: 1
 - Unit of measurement: Wh
 
-## input_number.battery_max_discharge_power
+## Maximum discharge power of battery
+_The hard limit of the discharge power. At all times, the discharge power will be capped at this value.
+Set it to either the maximum output of the system, or to a lower value, if desired._
 
-## [WIP: Add other entities from max. grid feed in]
+- Helper type: Number
+- Entity ID: input_number.battery_max_discharge_power
+- Minimum value: 1
+- Maximum value: [Maximum possible discharge power of the batteries, or the maximum power of the PV-system, whichever is lowest]
+- Step value: 1
+- Unit of measurement: W
 
 ## Maximum grid feed in for charging battery
 - Helper type: Template > Number
@@ -82,7 +89,7 @@ If the battery gets stuck at 99%, then this multiplier can be increased._
           {%- set ns.surplus_energy = ns.surplus_energy | int + max(state_attr('sensor.energy_production_today_2', 'wh_period')[key] | int - w_grid_feed_in | int, 0) -%}
         {% endif %}
       {%- endfor %}
-      {% if ns.surplus_energy < (states('number.remaining_charge_goal_today') | int + states('input_number.charge_goal_overestimation') | int) -%}
+      {% if ns.surplus_energy < states('number.remaining_charge_goal_today') | int -%}
         {{ w_grid_feed_in }}
         {% break -%}
       {% endif -%}
