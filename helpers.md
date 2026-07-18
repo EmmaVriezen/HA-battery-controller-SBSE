@@ -53,7 +53,19 @@ Set it to either the maximum output of the system, or to a lower value, if desir
 - Entity ID: input_number.battery_max_discharge_power
 - Minimum value: 1
 - Maximum value: [Maximum possible discharge power of the batteries, or the maximum power of the PV-system, whichever is lowest]
-- Step value: 1
+- Step size: 1
+- Unit of measurement: W
+
+### Battery charge setpoint
+_This is the control variable for the battery (dis)charge.
+Its value represents the power at which the battery is (dis)charged now.
+It is updated every time the automation 'SMA SBSE Battery Control' is run.
+Initialise with 0._
+- Helper type: Number
+- Entity ID: input_number.battery_charge_setpoint
+- Minimum value: [Equal to the negative minimum discharge power of the battery, e.g. -3600]
+- Maximum value: [Equal to the positive maximum charge power of the battery, e.g. 3600]
+- Step size: 1
 - Unit of measurement: W
 
 ## Battery-dependent helper entities
@@ -75,7 +87,7 @@ These helper entities are dependent on information from the battery. This inform
 
 - Minimum value: 0
 - Maximum value: [Total energy capacity of battery in Wh, e.g. 6500]
-- Step value: 1
+- Step size: 1
 - Unit of measurement: Wh
 
 ## DSMR-smart meter integration-dependent entities
@@ -113,7 +125,7 @@ These helpers use entities from the device 'Energy Meter' from the integration '
 
 - Minimum value: 0
 - Maximum value: [Equal to the maximum output of the inverter, e.g. 3600]
-- Step value: 1
+- Step size: 1
 - Unit of measurement: W
 
 ### Netto energy consumption
