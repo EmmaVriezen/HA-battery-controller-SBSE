@@ -2,7 +2,7 @@
 This is a Home Assistant automation + peripherals to control a battery via the hybrid SMA Sunny Boy Smart Energy inverter.
 
 ## What to expect
-After following the instructions in this repo, your battery should be charged at the middle of the day. This reduces pressure on the energy grid, and increases self-consumption when energy is cheapest. Optionally, your battery will be kept healthy by limiting how often it is charged to 100%.
+The goal of this repository is to control the charging of a battery at a Sunny Boy Smart Energy inverter in such a way, that a desired state of charge (SoC) is reached at the end of the day, and mostly energy during high-production moments is used for charging the battery. In practice, this means that the battery is charged at the middle of the day during sunny days, or more spread throughout the day on cloudy days. This reduces pressure on the energy grid, stabilises the grid feed-in from your house/photovoltaic plant, and increases self-consumption when energy is cheapest. Optionally, your battery will be kept healthy by limiting how often it is charged to 100%.
 
 <img width="804" height="378" alt="image" src="https://github.com/user-attachments/assets/2e22ccfd-b452-4bb7-a683-7065a4fb741e" />
 
