@@ -91,13 +91,15 @@ These helper entities are dependent on information from the battery. This inform
 - Unit of measurement: Wh
 
 ## DSMR-smart meter integration-dependent entities
-
 These helpers use entities from the device 'Energy Meter' from the integration 'DSMR Smart Meter'. From this device, the following entities are used:
 - sensor.energy_production_today_2
 - sensor.electricity_meter_power_consumption
 - sensor.electricity_meter_power_production
 
-### Maximum grid feed in for charging battery
+### Maximum grid feed-in for charging battery
+_This template calculates the power at which the PV production should be returned to the grid, in order to have enough energy left to charge the battery throughout the day, to the desired SoC.
+If the desired SoC is reached, this value will have the value of `input_number.battery_max_discharge_power`, because all surplus produced energy can be fed to the grid._
+
 - Helper type: Template > Number
 - Entity ID: number.maximum_grid_feed_in_for_charging_battery
 - Template:
