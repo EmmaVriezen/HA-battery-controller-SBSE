@@ -6,7 +6,12 @@ After following the instructions in this repo, your battery should be charged at
 
 <img width="804" height="378" alt="image" src="https://github.com/user-attachments/assets/2e22ccfd-b452-4bb7-a683-7065a4fb741e" />
 
-_Example of the battery (dis)charging behaviour on a sunny day. It was charged between 11:00 and 15:00 (orange), which are the peak solar production hours. Yellow represent discharge power._
+_Example of the battery (dis)charging behaviour on a sunny day. It was charged between 11:00 and 15:00 (orange), which are the peak solar production hours. Yellow represent discharge power; the solid line is the state of charge._
+
+
+<img width="796" height="378" alt="image" src="https://github.com/user-attachments/assets/6e954b5a-677c-480b-8122-237d64fea947" />
+
+_Example where the battery is charged (dotted line) later in the day to meet the desired state of charge again._
 
 
 ## Requirements
