@@ -1,5 +1,3 @@
-THIS IS AN INCOMPLETE REPO. ONCE THE FIRST VERSION IS COMPLETE, THIS LINE WILL BE REMOVED.
-
 # HA-battery-controller-SBSE
 This is a Home Assistant automation + peripherals to control a battery via the hybrid SMA Sunny Boy Smart Energy inverter.
 
