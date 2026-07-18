@@ -8,7 +8,6 @@ After following the instructions in this repo, your battery should be charged at
 
 **Requirements:**
 - A Sunny Boy Smart Energy inverter, with a battery (currently only tested with SMA Home Storage)
-- An enabled [Modbus integration](https://www.home-assistant.io/integrations/modbus/)
 - Readings of the energy meters P1 port with [the DSMR integration](https://www.home-assistant.io/integrations/dsmr)
 - A well-configured [Open-Meteo Solar Forecast integration](https://github.com/rany2/ha-open-meteo-solar-forecast)
 
@@ -17,10 +16,11 @@ If your setup does not meet these requirements, well, set it up first! Or contin
 **Setup:**
 1. Enable Modbus communication to the inverter (see below for how)
 2. Add the configuration in `modbus-configuration.yaml` to the `configuration.yaml` in Home Assistant
-3. Create the entities described in entities.md
-4. Create an automation with the 'Battery SoC 100% marker' blueprint
-5. Create an automation with the 'SMA SBSE Battery control' blueprint
-6. Enable external energy management on the inverter (see below for how)
+3. Restart Home Assistant to enable the Modbus integration.
+4. Create the entities described in entities.md
+5. Create an automation with the 'Battery SoC 100% marker' blueprint, and fill according to the instructions in the blueprint
+6. Create an automation with the 'SMA SBSE Battery control' blueprint, and fill according to the instructions in the blueprint
+7. Enable external energy management on the inverter (see below for how)
 
 ## Inverter settings
 
