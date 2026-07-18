@@ -4,6 +4,11 @@ This is a Home Assistant automation + peripherals to control a battery via the h
 ## What to expect
 After following the instructions in this repo, your battery should be charged at the middle of the day. This reduces pressure on the energy grid, and increases self-consumption when energy is cheapest. Optionally, your battery will be kept healthy by limiting how often it is charged to 100%.
 
+<img width="804" height="378" alt="image" src="https://github.com/user-attachments/assets/2e22ccfd-b452-4bb7-a683-7065a4fb741e" />
+
+_Example of the battery (dis)charging behaviour on a sunny day. It was charged between 11:00 and 15:00 (orange), which are the peak solar production hours. Yellow represent discharge power._
+
+
 ## Requirements
 - A Sunny Boy Smart Energy inverter, with a battery (currently only tested with SMA Home Storage)
 - Readings of the energy meters P1 port with [the DSMR integration](https://www.home-assistant.io/integrations/dsmr)
