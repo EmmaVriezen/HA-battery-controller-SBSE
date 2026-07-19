@@ -4,7 +4,7 @@ blueprint:
     Triggers when the state of charge (SoC) of the battery reaches 100%, and
     stores the current date.
     
-    'Default entity' means the name of the entity that should be selected, if you follow the instructions on GitHub (https://github.com/EmmaVriezen/HA-battery-controller-SBSE/tree/main)
+    'Default entity' means the name of the entity that should be selected, if you follow the instructions on GitHub (https://github.com/EmmaVriezen/HA-battery-controller-SBSE)
   domain: automation
   author: Emma Vriezen
   homeassistant:
