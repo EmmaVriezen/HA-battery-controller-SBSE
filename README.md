@@ -26,9 +26,9 @@ If your setup does not meet these requirements, well, set it up first! Or contin
 2. Add the configuration in `modbus-configuration.yaml` to the `configuration.yaml` in Home Assistant
 3. Restart Home Assistant to enable the Modbus integration
 4. Create the entities described in `entities.md`
-5. Create an automation with the `battery_fully_charged.yaml` blueprint, and fill according to the instructions in the blueprint
-6. Create an automation with the `battery_control.yaml` blueprint, and fill according to the instructions in the blueprint
-7. Enable external energy management on the inverter (see below for how)
+5. Create an automation with the `battery_fully_charged.yaml` blueprint, and fill according to the instructions in the blueprint [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FEmmaVriezen%2FHA-battery-controller-SBSE%2Fblob%2Fmain%2Fbattery_fully_charged.yaml)
+7. Create an automation with the `battery_control.yaml` blueprint, and fill according to the instructions in the blueprint [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FEmmaVriezen%2FHA-battery-controller-SBSE%2Fblob%2Fmain%2Fbattery_control.yaml)
+8. Enable external energy management on the inverter (see below for how)
 
 ## Setting up the inverter
 
